@@ -14,7 +14,9 @@ pulsar-admin
 What's going on in Pulsar?
 
 `bin/pulsar-admin namespaces list public/functions`
+
 `bin/pulsar-admin tenants list`
+
 `bin/pulsar-admin clusters list`
  
 pulsar-client
