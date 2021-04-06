@@ -4,6 +4,7 @@ from pulsar import Function
 
 class RoutingFunction(Function):
     def __init__(self):
+        self.basket = "persistent://public/default/basket-items"
         self.fruits_topic = "persistent://public/default/fruits"
         self.vegetables_topic = "persistent://public/default/vegetables"
 
@@ -14,11 +15,15 @@ class RoutingFunction(Function):
         return item in [b"carrot", b"lettuce", b"radish", b"other vegetables..."]
 
     def process(self, item, context):
+        context.get_logger().warn('start')
         if self.is_fruit(item):
+            context.get_logger().warn('is fruit')
             context.publish(self.fruits_topic, item)
         elif self.is_vegetable(item):
+            context.get_logger().warn('is veg')
             context.publish(self.vegetables_topic, item)
         else:
+            context.publish(self.basket, f'NOT {item} item')
             warning = "The item {0} is neither a fruit nor a vegetable".format(item)
             print(warning)
             context.get_logger().warn(warning)
