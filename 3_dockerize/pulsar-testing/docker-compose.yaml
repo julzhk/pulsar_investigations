@@ -1,0 +1,62 @@
+version: '3'
+
+services:
+    pulsar:
+        image: apachepulsar/pulsar
+        hostname: pulsar
+        expose:
+            - 6650
+            - 8080
+        command: >
+            /bin/bash -c
+            "bin/pulsar standalone &> /dev/null"
+        networks:
+            - network_test_bed
+
+    pulsar-dashboard:
+        image: apachepulsar/pulsar-dashboard
+        depends_on:
+            - pulsar
+        ports:
+            - "80:80"
+        environment:
+            - SERVICE_URL=http://pulsar:8080
+        networks:
+            - network_test_bed
+
+    producer:
+        build:
+            context: .
+            dockerfile: Dockerfile.producer
+        depends_on:
+            - pulsar
+        networks:
+            - network_test_bed
+
+    consumer:
+        build:
+            context: .
+            dockerfile: Dockerfile.consumer
+        depends_on:
+            - pulsar
+        networks:
+            - network_test_bed
+
+    django:
+        build:
+            context: ./django
+            dockerfile: Dockerfile.django
+        hostname: django
+        networks:
+            - network_test_bed
+        ports:
+            - "8000:8000"
+
+volumes:
+    pulsardata:
+    pulsarconf:
+
+networks:
+    network_test_bed:
+        name: network_test_bed
+        driver: bridge

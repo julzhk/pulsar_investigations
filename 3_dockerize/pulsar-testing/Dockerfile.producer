@@ -1,0 +1,13 @@
+FROM python:3.7-slim
+
+RUN mkdir /app/
+WORKDIR /app/
+
+ADD requirements.txt /app/
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+ADD producer/ /app/producer/
+WORKDIR /app/producer/
+
+ENTRYPOINT python run.py
